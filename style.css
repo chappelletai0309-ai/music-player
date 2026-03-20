@@ -639,3 +639,142 @@ body {
   transition: opacity .18s;
 }
 .drop-overlay.show { opacity: 1; }
+
+/* ════════════════ MOBILE TABS (hidden by default) ════════════════ */
+.mobile-tabs { display: none; }
+
+/* ════════════════ RESPONSIVE: TABLET (≤1024px) ════════════════ */
+@media (max-width: 1024px) {
+  .main-layout {
+    grid-template-columns: 190px 1fr 260px;
+  }
+  .now-playing-info { max-width: 140px; }
+  .progress-wrap   { max-width: 220px; }
+  .logo            { min-width: 100px; font-size: 14px; }
+}
+
+/* ════════════════ RESPONSIVE: SMALL TABLET (≤768px) ════════════════ */
+@media (max-width: 768px) {
+  /* Library hidden → playlist + settings side by side */
+  .main-layout {
+    grid-template-columns: 1fr 240px;
+  }
+  .library-panel { display: none; }
+
+  /* Topbar: import label hidden, show only icon */
+  .btn-import span { display: none; }
+  .btn-import { padding: 8px 10px; }
+  .now-playing-info { max-width: 120px; }
+  .progress-wrap   { max-width: 160px; }
+
+  /* Playlist name wider since library gone */
+  .pl-name { max-width: 40%; }
+}
+
+/* ════════════════ RESPONSIVE: MOBILE (≤640px) ════════════════ */
+@media (max-width: 640px) {
+  /* Body: leave room for bottom tab bar */
+  body { padding-bottom: 58px; }
+
+  /* ── Topbar: 2-row layout ── */
+  .topbar {
+    height: auto;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 8px;
+    row-gap: 6px;
+  }
+  .logo     { flex: 1; min-width: unset; font-size: 15px; order: 1; }
+  .topbar-right { order: 2; flex-shrink: 0; }
+
+  /* Transport + progress on 2nd row */
+  .transport       { order: 3; flex-shrink: 0; }
+  .now-playing-bar { order: 4; flex: 1; min-width: 0; }
+
+  /* Compact controls on mobile */
+  .ctrl-btn { width: 32px; height: 32px; }
+  .ctrl-btn svg { width: 16px; height: 16px; }
+  .play-btn { width: 38px; height: 38px; }
+
+  /* Import: icon only */
+  .btn-import { padding: 7px 9px; }
+  .btn-import span { display: none; }
+
+  /* Now-playing info: compact */
+  .now-playing-info { max-width: 100px; }
+  .time-disp { display: none; }    /* hide time on very small screens */
+  .progress-wrap { max-width: unset; }
+
+  /* ── Main layout: single panel ── */
+  .main-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+  }
+
+  /* All panels fill the space but only one shows at a time */
+  .library-panel,
+  .playlist-panel,
+  .settings-panel {
+    display: none;
+    grid-column: 1;
+    grid-row: 1;
+    border: none;
+  }
+
+  /* Panel shown by active tab */
+  .library-panel.tab-active,
+  .playlist-panel.tab-active,
+  .settings-panel.tab-active {
+    display: flex;
+  }
+
+  /* Playlist item: simpler on small screen */
+  .pl-drag  { display: none; }       /* hide drag handle (touch reorder not yet supported) */
+  .pl-badges { display: none; }      /* hide badges to save space */
+  .pl-name  { max-width: 55%; }
+  .pl-vol-val { display: none; }     /* hide % text, keep slider */
+
+  /* Settings: full-width */
+  .settings-panel { border-left: none; border-top: 1px solid var(--border); }
+
+  /* ── Mobile bottom tab bar ── */
+  .mobile-tabs {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 58px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+  }
+
+  .mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: color var(--tr);
+    padding: 6px 0;
+  }
+  .mobile-tab svg { width: 20px; height: 20px; }
+  .mobile-tab.active { color: var(--purple-l); }
+  .mobile-tab.active svg { stroke: var(--purple-l); }
+
+  /* Toast higher on mobile due to tab bar */
+  .toast { bottom: 70px; }
+}
+
+/* ════════════════ RESPONSIVE: VERY SMALL (≤380px) ════════════════ */
+@media (max-width: 380px) {
+  .np-name { display: none; }
+  .np-index { display: none; }
+}
+

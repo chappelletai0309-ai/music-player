@@ -178,7 +178,35 @@
 </div>
 
 <!-- Drop overlay -->
+<!-- Mobile bottom tab bar (hidden on desktop) -->
+<nav class="mobile-tabs" id="mobile-tabs">
+  <button class="mobile-tab" data-panel="library-panel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 18a3 3 0 1 1 0 .001A3 3 0 0 1 9 18zm0 0V8l9-3v10"/>
+    </svg>
+    <span>音樂庫</span>
+  </button>
+  <button class="mobile-tab active" data-panel="playlist-panel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+      <line x1="8" y1="18" x2="21" y2="18"/>
+      <circle cx="3" cy="6" r="1" fill="currentColor"/><circle cx="3" cy="12" r="1" fill="currentColor"/>
+      <circle cx="3" cy="18" r="1" fill="currentColor"/>
+    </svg>
+    <span>播放列表</span>
+  </button>
+  <button class="mobile-tab" data-panel="settings-panel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+    </svg>
+    <span>設定</span>
+  </button>
+</nav>
+
+<!-- Drop overlay -->
 <div class="drop-overlay" id="drop-overlay">拖放音樂檔案以匯入</div>
+
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>

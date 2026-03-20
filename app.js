@@ -865,7 +865,49 @@ async function init() {
   renderPlaylist();
   renderEditor(null);
   setupControls();
+  setupMobileTabs();
   toast('SceneFlow 已載入 — 資料自動儲存 💾');
 }
 
+/* ══════════════════════════════════════════
+   13. MOBILE TABS
+══════════════════════════════════════════ */
+function setupMobileTabs() {
+  const tabs   = document.querySelectorAll('.mobile-tab');
+  const panels = {
+    'library-panel':  document.querySelector('.library-panel'),
+    'playlist-panel': document.querySelector('.playlist-panel'),
+    'settings-panel': document.querySelector('.settings-panel'),
+  };
+
+  function switchTab(panelKey) {
+    // Update tab buttons
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.panel === panelKey));
+    // Update panel visibility
+    Object.entries(panels).forEach(([key, el]) => {
+      el.classList.toggle('tab-active', key === panelKey);
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => switchTab(tab.dataset.panel));
+  });
+
+  // Default: show playlist on mobile
+  switchTab('playlist-panel');
+}
+
+/** Call when a song is selected on mobile: auto-switch to settings tab */
+function mobileGoSettings() {
+  if (window.innerWidth <= 640) {
+    document.querySelectorAll('.mobile-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.panel === 'settings-panel');
+    });
+    document.querySelector('.library-panel') .classList.remove('tab-active');
+    document.querySelector('.playlist-panel').classList.remove('tab-active');
+    document.querySelector('.settings-panel').classList.add('tab-active');
+  }
+}
+
 init();
+
