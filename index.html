@@ -71,7 +71,18 @@
   <aside class="library-panel">
     <div class="panel-header">
       <h2>音樂庫</h2>
-      <span id="lib-count">0 首</span>
+      <div class="lib-header-actions">
+        <span id="lib-count">0 首</span>
+        <button class="btn-clear-lib" id="btn-clear-lib" title="清除所有音樂庫">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+          清除全部
+        </button>
+      </div>
     </div>
     <ul class="lib-list" id="lib-list">
       <li class="list-empty">匯入音樂後顯示於此<br/>可拖曳至右方加入播放列表</li>

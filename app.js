@@ -471,6 +471,17 @@ function renderPlaylist() {
         </div>
         <div class="pl-num">${i + 1}</div>
         <div class="pl-name" title="${name}">${name}</div>
+        <div class="pl-vol">
+          <span class="pl-vol-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
+          </span>
+          <input type="range" class="pl-vol-slider" min="0" max="1" step="0.01"
+            value="${item.volume ?? 1}" data-pl-id="${item.id}" />
+          <span class="pl-vol-val" id="plv-${item.id}">${Math.round((item.volume ?? 1) * 100)}%</span>
+        </div>
         <div class="pl-badges">${badges}</div>
         <div class="pl-wave"><span></span><span></span><span></span></div>
         <button class="pl-remove" data-pl-id="${item.id}" title="從列表移除">
@@ -500,6 +511,32 @@ function renderPlaylist() {
       isFading = false;
       const item = playlist[idx];
       await playAt(idx, 0, item.fadeIn || 0);
+    });
+  });
+
+  // Inline volume sliders
+  $$('.pl-vol-slider').forEach(slider => {
+    slider.addEventListener('click', e => e.stopPropagation()); // don't trigger item select
+    slider.addEventListener('input', async e => {
+      e.stopPropagation();
+      const id   = slider.dataset.plId;
+      const item = playlist.find(p => p.id === id);
+      if (!item) return;
+      item.volume = parseFloat(slider.value);
+      const valEl = document.getElementById('plv-' + id);
+      if (valEl) valEl.textContent = Math.round(item.volume * 100) + '%';
+      // Live update if this track is currently playing
+      if (isPlaying && playlist[currentIdx]?.id === id && currentGain) {
+        currentGain.gain.setValueAtTime(item.volume, ensureCtx().currentTime);
+      }
+      await saveState();
+      // Also sync the right-panel slider if this song is selected there
+      const rpSlider = document.getElementById('volume-range');
+      const rpVal    = document.getElementById('volume-val');
+      if (activeItemId === id && rpSlider) {
+        rpSlider.value = item.volume;
+        if (rpVal) rpVal.textContent = Math.round(item.volume * 100) + '%';
+      }
     });
   });
 
@@ -761,6 +798,27 @@ function setupControls() {
   $('#file-input').addEventListener('change', async e => {
     await importFiles(e.target.files);
     e.target.value = '';
+  });
+
+  // ── Clear all library ──
+  $('#btn-clear-lib').addEventListener('click', async () => {
+    if (!library.length) { toast('音樂庫已是空的'); return; }
+    if (!confirm(`確定清除全部 ${library.length} 首音樂？\n（播放列表也會一併清空）`)) return;
+    // Stop playback first
+    if (audioCtx?.state === 'suspended') audioCtx.resume();
+    fullStop();
+    // Delete all blobs from IndexedDB
+    for (const item of library) {
+      await idbDelete('blobs', item.id);
+    }
+    library  = [];
+    playlist = [];
+    activeItemId = null;
+    await saveState();
+    renderLibrary();
+    renderPlaylist();
+    renderEditor(null);
+    toast('已清除所有音樂庫 🗑️');
   });
 
   // ── Drag-and-drop files onto window ──
