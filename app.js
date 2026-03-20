@@ -267,10 +267,16 @@ function startProgressTimer() {
   clearProgressTimer();
   progressTimer = setInterval(() => {
     if (!isPlaying || isPaused || !currentSource) return;
-    const ctx     = ensureCtx();
-    const elapsed = trackStartOffset + (ctx.currentTime - trackStartAudioTime);
-    const dur     = trackDuration;
-    if (dur > 0) setProgress(Math.min(elapsed / dur, 1));
+    const ctx        = ensureCtx();
+    const totalElapsed = trackStartOffset + (ctx.currentTime - trackStartAudioTime);
+    const dur          = trackDuration;
+    if (dur <= 0) return;
+
+    // 若是重複播放，用餘數讓進度條每次都從 0 重跑
+    const item    = playlist[currentIdx];
+    const elapsed = item?.repeat ? totalElapsed % dur : totalElapsed;
+
+    setProgress(Math.min(elapsed / dur, 1));
     setTimeDisp(elapsed, dur);
   }, 250);
 }
