@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SceneFlow 音樂播放器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════ TOP BAR ══════════════════ -->
+<header class="topbar">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="9" cy="18" r="3"/><circle cx="18" cy="15" r="3"/>
+      <path d="M12 18V8l9-3v10"/>
+    </svg>
+    SceneFlow
+  </div>
+
+  <div class="transport">
+    <!-- Stop -->
+    <button class="ctrl-btn stop-btn" id="btn-stop" title="停止">
+      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+    </button>
+    <!-- Prev -->
+    <button class="ctrl-btn" id="btn-prev" title="上一首">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+    </button>
+    <!-- Play / Pause -->
+    <button class="ctrl-btn play-btn" id="btn-play" title="播放/暫停">
+      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg class="icon-pause hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>
+    </button>
+    <!-- Next -->
+    <button class="ctrl-btn" id="btn-next" title="下一首">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12z"/><rect x="16" y="6" width="2" height="12"/></svg>
+    </button>
+  </div>
+
+  <div class="now-playing-bar">
+    <div class="now-playing-info">
+      <span class="np-index" id="np-index"></span>
+      <span class="np-name" id="np-name">—</span>
+    </div>
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-fill" id="progress-fill"></div>
+      <div class="progress-thumb" id="progress-thumb"></div>
+    </div>
+    <span class="time-disp" id="time-disp">—</span>
+  </div>
+
+  <div class="topbar-right">
+    <button class="btn-import" id="btn-import">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+      匯入音樂
+    </button>
+    <input type="file" id="file-input" accept="audio/*" multiple hidden />
+  </div>
+</header>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<div class="main-layout">
+
+  <!-- LEFT: Library -->
+  <aside class="library-panel">
+    <div class="panel-header">
+      <h2>音樂庫</h2>
+      <span id="lib-count">0 首</span>
+    </div>
+    <ul class="lib-list" id="lib-list">
+      <li class="list-empty">匯入音樂後顯示於此<br/>可拖曳至右方加入播放列表</li>
+    </ul>
+  </aside>
+
+  <!-- CENTER: Playlist -->
+  <main class="playlist-panel">
+    <div class="panel-header">
+      <h2>播放列表</h2>
+      <span id="pl-count">0 首</span>
+    </div>
+    <ul class="pl-list" id="pl-list">
+      <li class="list-empty">從音樂庫拖曳歌曲至此，或點擊歌曲旁的「+」</li>
+    </ul>
+  </main>
+
+  <!-- RIGHT: Song Settings -->
+  <aside class="settings-panel" id="settings-panel">
+    <div class="settings-placeholder" id="settings-placeholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/>
+      </svg>
+      <p>點選歌曲進行設定</p>
+    </div>
+
+    <div class="settings-content hidden" id="settings-content">
+      <div class="settings-header">
+        <div class="settings-song-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 18a3 3 0 1 1 0 .001A3 3 0 0 1 9 18zm0 0V8l9-3v10"/></svg>
+        </div>
+        <div class="settings-song-name" id="settings-song-name">—</div>
+      </div>
+
+      <div class="settings-body">
+
+        <!-- Fade Out -->
+        <div class="setting-group">
+          <div class="setting-label-row">
+            <label>淡出時長 <span class="setting-hint">（按下一首時淡出）</span></label>
+            <span class="setting-val" id="fadeout-val">0.0s</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-min">0s</span>
+            <input type="range" class="styled-range" id="fadeout-range" min="0" max="15" step="0.1" value="0" />
+            <span class="slider-max">15s</span>
+          </div>
+        </div>
+
+        <!-- Fade In -->
+        <div class="setting-group">
+          <div class="setting-label-row">
+            <label>淡入時長 <span class="setting-hint">（本首開始時淡入）</span></label>
+            <span class="setting-val" id="fadein-val">0.0s</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-min">0s</span>
+            <input type="range" class="styled-range" id="fadein-range" min="0" max="15" step="0.1" value="0" />
+            <span class="slider-max">15s</span>
+          </div>
+        </div>
+
+        <!-- Volume -->
+        <div class="setting-group">
+          <div class="setting-label-row">
+            <label>音量</label>
+            <span class="setting-val" id="volume-val">100%</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-min">0%</span>
+            <input type="range" class="styled-range" id="volume-range" min="0" max="1" step="0.01" value="1" />
+            <span class="slider-max">100%</span>
+          </div>
+        </div>
+
+        <!-- Repeat -->
+        <div class="setting-group">
+          <div class="setting-label-row">
+            <label>重複播放</label>
+            <label class="toggle-wrap">
+              <input type="checkbox" id="repeat-toggle" />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <p class="setting-hint-block">開啟後此曲會循環，直到手動切換</p>
+        </div>
+
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- Drop overlay -->
+<div class="drop-overlay" id="drop-overlay">拖放音樂檔案以匯入</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
